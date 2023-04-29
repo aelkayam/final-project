@@ -3,7 +3,6 @@ from tensorflow import keras
 from keras import layers
 import os
 
-
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
 
 img_height = 28
@@ -13,6 +12,7 @@ batch_size = 32
 model = keras.Sequential(
     [
         layers.Input((28, 28, 1), name='image'),
+        layers.RandomRotation(factor=0.05, fill_mode='reflect', interpolation='bilinear'),
         layers.Conv2D(32, 3, padding="same", activation='relu', name='conv1'),
         layers.MaxPooling2D(pool_size=(2, 2)),
         layers.Conv2D(64, 3, padding="same", activation='relu', name='conv2'),
@@ -57,7 +57,7 @@ model.compile(
 )
 
 print("\nFit model on training data:")
-model.fit(ds_train, epochs=40, verbose=2, validation_data=ds_validation)
+model.fit(ds_train, epochs=20, verbose=2, validation_data=ds_validation)
 model.summary()
 
 print("\nEvaluate on validation data:")
