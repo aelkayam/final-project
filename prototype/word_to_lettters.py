@@ -1,22 +1,20 @@
 import os
 import cv2
-import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 import numpy as np
 
-
 alphabet_dict = {0: 'א', 1: 'ב', 2: 'ג', 3: 'ד', 4: 'ה', 5: 'ו', 6: 'ז', 7: 'ח', 8: 'ט',
-                    9: 'י', 10: 'כ', 11: 'ן', 12: 'ל', 13: 'מ', 14: 'ם', 15: 'נ', 16: 'ן', 17: 'ס', 18: 'ע', 19: 'פ', 20: 'ף', 21: 'צ', 22: 'ץ', 23: 'ק', 24: 'ר', 25: 'ש', 26: 'ת'}
+                 9: 'י', 10: 'כ', 11: 'ן', 12: 'ל', 13: 'מ', 14: 'ם', 15: 'נ', 16: 'ן', 17: 'ס', 18: 'ע', 19: 'פ',
+                 20: 'ף', 21: 'צ', 22: 'ץ', 23: 'ק', 24: 'ר', 25: 'ש', 26: 'ת'}
 img_height = 28
 img_width = 28
 
 # load model
-model = keras.models.load_model("neural-network/saved_model")
+model = keras.models.load_model("../neural-network/saved_model")
 
 
 def predict_letter(img_path, index):
-
     # pre-processing the image:
     image = tf.keras.preprocessing.image.load_img(
         img_path, color_mode="grayscale", target_size=(img_height, img_width))
@@ -39,9 +37,8 @@ def predict_letter(img_path, index):
 
 
 # Load image and convert to grayscale
-img = cv2.imread('prototype/sentences/ex_sentence.jpg')
+img = cv2.imread("sentences/ex_sentence.jpg")
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-
 
 # Apply bilateral filter to remove noise while preserving edges
 blur = cv2.bilateralFilter(gray, 9, 75, 75)
@@ -49,7 +46,6 @@ blur = cv2.bilateralFilter(gray, 9, 75, 75)
 # Threshold image to create a binary image
 _, thresh = cv2.threshold(
     blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-
 
 # Remove noise by opening (erosion followed by dilation)
 kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
@@ -70,8 +66,7 @@ contours, hierarchy = cv2.findContours(
 
 # Sort contours right to left to identify spaces between words
 contours = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[
-                  0] + cv2.boundingRect(ctr)[2], reverse=True)
-
+                                                0] + cv2.boundingRect(ctr)[2], reverse=True)
 
 # Create a directory to save the cropped images
 if not os.path.exists('prototype/letters'):
@@ -100,20 +95,19 @@ total_value = 0
 for i, contour in enumerate(contours):
     # Get bounding box of contour
     (x, y, w, h) = cv2.boundingRect(contour)
-    h = h * 2
 
     # Check if contour is too small or too wide, it might be noise
-    if w < 7 or h < 7 or w//h > 4 or w/h < 0.1:
+    if w < 7 or h < 7 or w // h > 4 or w / h < 0.1:
         continue
 
     print("\nwidth: " + str(w) + " height: " + str(h))
-    print("aspect ratio: " + str(w/h))
+    print("aspect ratio: " + str(w / h))
 
     # box coordinates
     x1 = x
     x2 = x + w
-    y1 = y - h//4
-    y2 = y + h//2
+    y1 = y
+    y2 = y + h
 
     cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
@@ -128,8 +122,8 @@ for i, contour in enumerate(contours):
 
     # Add a space after each letter
     if i < len(contours) - 1:
-        next_x = cv2.boundingRect(contours[i+1])[0]
-        space_width = x - (next_x + cv2.boundingRect(contours[i+1])[2])
+        next_x = cv2.boundingRect(contours[i + 1])[0]
+        space_width = x - (next_x + cv2.boundingRect(contours[i + 1])[2])
         print("space width: " + str(space_width))
 
         if space_width > 1.5 * w:
@@ -142,7 +136,7 @@ cv2.imshow("image with boxes", img)
 cv2.resizeWindow('image with boxes', 1280, 720)
 cv2.waitKey(0)
 
-result = result[::-1]
+# result = result[::-1]
 print("result: " + result)
-print("average confidence level: " + str(round(total_value/i, 5)))
+print("average confidence level: " + str(round(total_value / i, 5)))
 cv2.destroyAllWindows()
