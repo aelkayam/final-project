@@ -1,19 +1,15 @@
 from PIL import Image
-import cv2
-import  os
+import os
 import uuid
-import time
-from addToDataset import  addToDataset
+import shutil
+
 
 class Crop_every_image:
     def __init__(self, path):
         self.path = path
         self.crop_image()
 
-
-
-
-    def crop_image (self):
+    def crop_image(self):
         for filename in os.listdir(self.path):
             img = Image.open((os.path.join(self.path, filename)))
             width, height = img.size
@@ -28,22 +24,18 @@ class Crop_every_image:
             img.save(os.path.join(self.path, filename))
 
 
-
-
 class Split:
     def __init__(self, path):
         print(path)
         self.count = 1
         self.path = path
-
+        self.parent_path = os.path.dirname(path)
         unique_id = uuid.uuid4()
         dir_name = str(unique_id)
         self.output_folder = f"filled_in_templates/result/{dir_name}"
         if not os.path.exists(self.output_folder):
             os.makedirs(self.output_folder)
         self.new_folder()
-
-
 
     def new_folder(self):
 
@@ -52,7 +44,6 @@ class Split:
                 filepath = os.path.join(self.path, filename)
                 image = Image.open(filepath)
                 self.split_page(image)
-
 
     def split_page(self, img):
         width, height = img.size
@@ -69,18 +60,20 @@ class Split:
                 right = left + square_size
                 lower = upper + square_size
                 # Crop the image using the current crop box
-                cropped_img = img.crop((left , upper, right, lower))
+                cropped_img = img.crop((left, upper, right, lower))
                 # Save the cropped image with a filename that includes the row and column numbers
 
                 filename = f'{self.count}.jpg'
                 filepath = os.path.join(self.output_folder, filename)
                 cropped_img.save(filepath)
-                self.count+=1
+                self.count += 1
 
-        cropEvery = Crop_every_image(self.output_folder)
+    # cropEvery = Crop_every_image(self.output_folder)
 
-
-
-
-
-
+    def delete_folder(self, path):
+        try:
+            # remove the folder and all its contents
+            shutil.rmtree(path)
+            print("Folder deleted successfully")
+        except OSError as error:
+            print(f"Error: {path} : {error.strerror}")

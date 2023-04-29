@@ -3,11 +3,12 @@ from tensorflow import keras
 import numpy as np
 import matplotlib.pyplot as plt
 
-model = keras.models.load_model("neural-network/saved_model")
-img_path = "processing_templates/filled_in_templates/result/cbafb93e-a1b6-435e-a1fb-019a86a47082/234.jpg"
+model = keras.models.load_model("saved_model")
+img_path = "../dataset/10111/23_17.png"
 
 alphabet_dict = {0: 'א', 1: 'ב', 2: 'ג', 3: 'ד', 4: 'ה', 5: 'ו', 6: 'ז', 7: 'ח', 8: 'ט',
-                 9: 'י', 10: 'כ', 11: 'ן', 12: 'ל', 13: 'מ', 14: 'ם', 15: 'נ', 16: 'ן', 17: 'ס', 18: 'ע', 19: 'פ', 20: 'ף', 21: 'צ', 22: 'ץ', 23: 'ק', 24: 'ר', 25: 'ש', 26: 'ת'}
+                 9: 'י', 10: 'כ', 11: 'ן', 12: 'ל', 13: 'מ', 14: 'ם', 15: 'נ', 16: 'ן', 17: 'ס', 18: 'ע', 19: 'פ',
+                 20: 'ף', 21: 'צ', 22: 'ץ', 23: 'ק', 24: 'ר', 25: 'ש', 26: 'ת'}
 
 img_height = 28
 img_width = 28
@@ -30,7 +31,7 @@ print("the class index is: " + str(class_index) +
 
 # visualize prediction
 font = {'family': 'sans-serif',
-        'color':  'darkred',
+        'color': 'darkred',
         'weight': 'normal',
         'size': 18,
         }

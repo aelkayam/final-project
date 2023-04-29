@@ -1,17 +1,18 @@
 import os
 import uuid
 import shutil
+from split_image import Split
+
+
 class addToDataset:
     def __init__(self):
         self.input_dir = "filled_in_templates/result"
-        self.output = '../../dataset'
-
-
+        self.output = "../../dataset"
 
         self.add()
+        self.delete_folder(self.input_dir)
 
-
-    def add (self):
+    def add(self):
         binary_dir = '00000'
         list_alef = ['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg', '7.jpg', '8.jpg', '9.jpg']
         list_bet = ['10.jpg', '11.jpg', '12.jpg', '13.jpg', '14.jpg', '15.jpg', '16.jpg', '17.jpg', '18.jpg']
@@ -99,9 +100,6 @@ class addToDataset:
                 elif file_name in list_tav:
                     binary_dir = '11010'
 
-
-
-
                 old_path = f"{root}/{file_name}"
                 unique_id = uuid.uuid4()
                 f_name = str(unique_id)
@@ -110,5 +108,13 @@ class addToDataset:
                 dst_dir = f"{self.output}/{binary_dir}"
                 shutil.move(new_path, dst_dir)
 
-ad = addToDataset()
+    def delete_folder(self, path):
+        try:
+            # remove the folder and all its contents
+            shutil.rmtree(path)
+            print("Folder deleted successfully")
+        except OSError as error:
+            print(f"Error: {path} : {error.strerror}")
 
+
+add = addToDataset()
