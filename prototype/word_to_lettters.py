@@ -69,22 +69,8 @@ contours = sorted(contours, key=lambda ctr: cv2.boundingRect(ctr)[
                                                 0] + cv2.boundingRect(ctr)[2], reverse=True)
 
 # Create a directory to save the cropped images
-if not os.path.exists('prototype/letters'):
-    os.makedirs('prototype/letters')
-
-# merged_contours = []
-# min_x_overlap = 5
-
-# for contour in contours:
-#     x, y, w, h = cv2.boundingRect(contour)
-#     if len(merged_contours) > 0:
-#         prev_x, prev_y, prev_w, prev_h = merged_contours[-1]
-#         if x - prev_x <= min_x_overlap:
-#             merged_contours[-1] = (prev_x, min(prev_y, y),
-#                                    x + w - prev_x, max(prev_h, h))
-#             continue
-#     merged_contours.append((x, y, w, h))
-
+if not os.path.exists('letters'):
+    os.makedirs('letters')
 
 result = ''
 total_value = 0
@@ -113,10 +99,10 @@ for i, contour in enumerate(contours):
 
     # Crop the letter and save as a JPEG
     letter = dilation[y1:y2, x1:x2]
-    cv2.imwrite(f'prototype/letters/letter{i}.jpg', letter)
+    cv2.imwrite(f'letters/letter{i}.jpg', letter)
 
     # use current model to predict the character
-    prediction, value = predict_letter(f"prototype/letters/letter{i}.jpg", i)
+    prediction, value = predict_letter(f"letters/letter{i}.jpg", i)
     result += prediction
     total_value += value
 
@@ -129,7 +115,7 @@ for i, contour in enumerate(contours):
         if space_width > 1.5 * w:
             space = 255 * np.ones((h, space_width), np.uint8)
             result += ' '
-            cv2.imwrite(f'prototype/letters/letter{i}_space.jpg', space)
+            cv2.imwrite(f'letters/letter{i}_space.jpg', space)
 
 cv2.namedWindow('image with boxes', cv2.WINDOW_KEEPRATIO)
 cv2.imshow("image with boxes", img)
